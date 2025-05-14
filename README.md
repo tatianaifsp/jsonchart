@@ -30,28 +30,3 @@ O arquivo `estoque.json` contém a lista de peças em estoque:
     "local": "Armazém B"
   }
 ]
-
-# 📦 Relatório de Estoque com Gráfico e PDF
-
-Este projeto é uma aplicação web simples que carrega dados de estoque de um arquivo JSON, exibe os dados em um **gráfico de barras** com **Chart.js**, e gera um **relatório em PDF** com **jsPDF** contendo o gráfico e a lista de itens.
-
----
-
-## 📊 Gráficos com Chart.js
-
-A biblioteca [**Chart.js**](https://www.chartjs.org/) permite criar **gráficos interativos e responsivos** com apenas algumas linhas de código JavaScript.
-
-Neste projeto, usamos um **gráfico de barras** para exibir visualmente as **quantidades em estoque** de cada peça.
-
-### Outros tipos de gráficos suportados:
-
-- 📈 Linha (`line`)
-- 🍕 Pizza (`pie`)
-- 🎯 Radar (`radar`)
-- 🔵 Dispersão (`scatter`)
-
-📘 **Documentação oficial do Chart.js:**  
-🔗 [https://www.chartjs.org/docs/latest/](https://www.chartjs.org/docs/latest/)
-
----
-
