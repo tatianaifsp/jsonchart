@@ -1,0 +1,18 @@
+[
+    {
+      "nome": "Peça 1",
+      "quantidade": 10,
+      "local": "Armazém A"
+    },
+    {
+      "nome": "Peça 2",
+      "quantidade": 5,
+      "local": "Armazém B"
+    },
+    {
+      "nome": "Peça 3",
+      "quantidade": 2,
+      "local": "Armazém C"
+    }
+  ]
+  

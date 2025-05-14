@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Estoque com Gráfico</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- jsPDF -->
+</head>
+<body>
+    <h1>Relatório de Estoque com Gráfico</h1> <!-- Título da página -->
+
+<canvas id="myChart" width="400" height="200"></canvas> <!-- Área onde o gráfico será desenhado -->
+
+<button id="downloadBtn">Baixar PDF</button> <!-- Botão para baixar o relatório em PDF -->
+
+<script>
+    // Função assíncrona que carrega os dados do arquivo estoque.json
+    async function carregarEstoque() {
+        try {
+            const response = await fetch('estoque.json');  // Busca o arquivo estoque.json no servidor
+            const data = await response.json();  // Converte os dados JSON em um objeto utilizável no JavaScript
+            
+            return data;  // Retorna os dados para serem usados no restante do código
+        } catch (error) {
+            console.error('Erro ao carregar os dados do estoque:', error); // Mostra erro no console se não conseguir carregar o JSON
+            alert('Erro ao carregar os dados do estoque. Verifique o arquivo JSON.'); // Mostra alerta na tela para o usuário
+            return [];  // Retorna uma lista vazia se der erro
+        }
+    }
+
+    // Função principal que monta o gráfico e prepara o PDF
+    async function gerarRelatorio() {
+        const estoqueData = await carregarEstoque(); // Chama a função que carrega o JSON
+
+        // Verifica se há dados. Se estiver vazio, mostra alerta e para o processo
+        if (estoqueData.length === 0) {
+            alert('Nenhum dado de estoque disponível.');
+            return; // Interrompe a execução se não houver dados
+        }
+
+        // Cria duas listas: uma com os nomes das peças, outra com as quantidades
+        const nomes = estoqueData.map(item => item.nome); // Extrai o nome de cada peça
+        const quantidades = estoqueData.map(item => item.quantidade); // Extrai a quantidade de cada peça
+
+        // Cria o gráfico de barras com os dados do JSON
+        const ctx = document.getElementById('myChart').getContext('2d'); // Pega o contexto do canvas (área de desenho)
+        const myChart = new Chart(ctx, { // Cria o gráfico com Chart.js
+            type: 'bar', // Tipo de gráfico: barras
+            data: {
+                labels: nomes, // Os nomes das peças aparecem no eixo X
+                datasets: [{
+                    label: 'Quantidade', // Legenda do gráfico
+                    data: quantidades, // As quantidades aparecem no eixo Y
+                    backgroundColor: ['#FF5733', '#33FF57', '#3357FF'], // Cores das barras
+                    borderColor: ['#C70039', '#006400', '#0033CC'], // Cor da borda das barras
+                    borderWidth: 1 // Espessura da borda
+                }]
+            }
+        });
+
+        // Evento que ocorre quando o botão "Baixar PDF" é clicado
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf; // Importa a biblioteca jsPDF
+            const doc = new jsPDF(); // Cria um novo documento PDF
+
+            // Adiciona o título no PDF
+            doc.setFontSize(18); // Define o tamanho da fonte
+            doc.text("Relatório de Estoque com Gráfico", 10, 20); // Escreve o título no PDF
+
+            // Captura o gráfico como imagem
+            myChart.canvas.toBlob((blob) => {
+                const imgData = URL.createObjectURL(blob); // Converte a imagem do gráfico para uma URL temporária
+                doc.addImage(imgData, 'PNG', 10, 30, 180, 100); // Adiciona o gráfico como imagem no PDF
+
+                // Adiciona os dados do estoque abaixo do gráfico no PDF
+                let yPosition = 140; // Posição vertical inicial
+                estoqueData.forEach(item => { // Para cada item do estoque:
+                    doc.setFontSize(12); // Define tamanho da fonte para os dados
+                    doc.text(`Nome: ${item.nome} - Quantidade: ${item.quantidade} - Local: ${item.local}`, 10, yPosition); // Adiciona linha com os dados
+                    yPosition += 10; // Move para a próxima linha
+                });
+
+                // Salva o PDF com nome
+                doc.save('relatorio_com_grafico.pdf'); // Faz o download do PDF
+            });
+        });
+    }
+
+    // Chama a função principal ao carregar a página
+    gerarRelatorio(); // Executa tudo ao abrir a página
+</script>
+
